@@ -5,7 +5,7 @@
 <script type="text/javascript" src="jPGNav.js"></script>
 
 <style>
-#container { 
+.container { 
 	width: 300px; 
 	cursor: default;
 	display: block;
@@ -17,7 +17,7 @@
 	position: relative;
 }
 
-#container ul{ 
+.container ul{ 
 	
 	display: table;
 	height: 30px;
@@ -29,7 +29,7 @@
 	width: 991px;
 }
 
-#container li{	
+.container li{	
 	border: solid 1px black;
 	display: table-cell;
 	float: none;
@@ -69,8 +69,9 @@
 </head>
  
 <body>
-
-<div id="container">
+<strong>Example 1</strong>
+<div>
+<div id="example1" class="container">
 	<div class="arrowR jAnimateTabs" data-animate-direction="next"> >> </div>
 	<div class="arrowL jAnimateTabs" data-animate-direction="prev" style="display:none"> << </div>
 	<ul class="jList">
@@ -84,11 +85,31 @@
 		<li>hhhhhh</li>
 	</ul>
 </div>
+</div>
+<br clear="all">
+<strong>Example 2</strong>
+<div>
+<div id="example2" class="container">
+	<div class="arrowR jAnimateTabs" data-animate-direction="next"> >> </div>
+	<div class="arrowL jAnimateTabs" data-animate-direction="prev" style="display:none"> << </div>
+	<ul class="jList">
+		<li>aaaaaa</li>
+		<li>bbbbbb</li>
+		<li>cccccc</li>
+		<li>dddddd</li>
+		<li>eeeeee</li>
+		<li>ffffff</li>
+		<li>gggggg</li>
+		<li>hhhhhh</li>
+	</ul>
+</div>
+</div>
 <script type="text/javascript">
 
 </script>
 </body>
 <script type="text/javascript">
-	$('#container').jPGNav();  
+	$('#example1').jPGNav();  
+	$('#example2').jPGNav({arrowAlwaysVisible:true}); 
 </script>
 </html>
