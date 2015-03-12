@@ -109,7 +109,7 @@
 </script>
 </body>
 <script type="text/javascript">
-	$('#example1').jPGNav();  
-	$('#example2').jPGNav({arrowAlwaysVisible:true}); 
+	$('#example1').sliding();  
+	$('#example2').sliding({arrowAlwaysVisible:true}); 
 </script>
 </html>
