@@ -2,20 +2,26 @@
 {
 	'use strict';
 	
-	$.fn.jPGNav = function(options)
+	$.fn.sliding = function(options)
 	{
 		// initiate some properties
 		this.tabWidth = [0]; //array with the calculate width of each tabs since position 0
 		this.tabPos = 0; //index of tabWidth
 		var self = this;
-		console.log( options);
-		options = $.extend({},$.fn.jPGNav.defaultOptions, options);
+		
+		options = $.extend({},$.fn.sliding.defaultOptions, options);
 		return this.each(
 			function()
 			{
 				// initiate tabWidth
 				calcTabsWith(self, options);
-				// manage navigation arrow
+				
+				// initiation position if nt 0
+				if (self.tabPos > 0) {
+					animation($(this).find( options.listSelector ), self, options, 0);
+				}
+				
+				// initiate arrow
 				manageArrow(self, options);
 			
 				// if click on an arrow, need to navigate
@@ -33,26 +39,48 @@
 	// calculate tabWidth array
 	calcTabsWith = function (self, options){
 		var $tabs = $(self).find( options.listElementSelector ); //get all tabs
+			 
 		// for each tabs, calculate the end position of the tabs since position 0
 		$tabs.each(function(i){
-			self.tabWidth.push(self.tabWidth[i] + $($tabs[i]).outerWidth());
+			self.tabWidth.push(self.tabWidth[i] + $($tabs[i]).outerWidth() + options.deltaBetweenElements);
+			
+			if($($tabs[i]).is(options.elementSelectedSelector)){
+				if (self.tabWidth[i] > $(self).outerWidth()) {
+					self.tabPos = i;
+				}
+			}
 		});
 	},
 	// animate the tabs
 	tabNavigate = function(self, $arrow, options) {
 		var arrowOption = options.arrowDirection // options of the navigation arrow 
-			,direction = $arrow.attr(arrowOption.attr) == arrowOption.valueAttrNext ? arrowOption.valueNext : arrowOption.valuePrev; //get the direction of the arrow clicked
+			,direction = $arrow.attr(arrowOption.attr) === arrowOption.valueAttrNext ? arrowOption.valueNext : arrowOption.valuePrev; //get the direction of the arrow clicked
 
 		// check if we need to animate
-		(self.tabPos +direction < self.tabWidth.length-1 && self.tabPos + direction >= 0)
-			&& $(self).find( options.listSelector )
-				.stop(true,true)
-				.animate({left: "-"+(self.tabWidth[self.tabPos+direction])},100, function() {
-					//get new position
-					self.tabPos += direction;
-					// manage arrow only if there's not always visible
-					!options.arrowAlwaysVisible && manageArrow(self, options);
-				});
+		(self.tabPos + direction < self.tabWidth.length-1 && self.tabPos + direction >= 0)
+			&& animation($(self).find( options.listSelector ), self, options, direction);				
+	},
+	animation = function($this, self, options, direction) {
+		//direction = 0 => initiate position 
+		$this
+			.stop(true,true)
+			.animate({left: "-"+(self.tabWidth[self.tabPos + direction])},100, function() {
+				//get new position
+				self.tabPos += direction;
+
+				// trigger event if arrive at start or end of list 
+				if (self.tabPos === 0) {
+					$(self).trigger('slidingStartPosition');
+				}
+
+				// no more tabs to show and there's a direction 
+				if (self.tabWidth[self.tabPos] >= (self.tabWidth[self.tabWidth.length-1] - $(self).outerWidth()) && direction !== 0) {
+					$(self).trigger('slidingEndPosition');
+				}
+
+				// manage arrow only if there's not always visible
+				!options.arrowAlwaysVisible && manageArrow(self, options);
+			});
 	},
 	// manage arrow, check if need to show or hide it
 	manageArrow = function (self, options) {
@@ -68,7 +96,8 @@
 				showNavButton(self, options, options.arrowDirection.valueAttrPrev, false);
 			}
 
-			//hide or show more button
+			//hide or show more button			
+			// @todo maybe find a simpliest method
 			if((self.tabWidth[self.tabPos] ? self.tabWidth[self.tabPos] : 0) < (self.tabWidth[self.tabWidth.length-1] - $(self).outerWidth())){
 				showNavButton(self, options, options.arrowDirection.valueAttrNext, true);
 			}else{
@@ -92,18 +121,20 @@
 				$node.hide();
 			}
 		}
-	}
+	};
 
 	/**
 	 * default options for every instance of the plugin
 	 */
-	$.fn.jPGNav.defaultOptions =
+	$.fn.sliding.defaultOptions =
 	{
 		arrowSelector: '.jAnimateTabs' // usualy a class on <div> or <a>
 		,arrowDirection: { attr: 'data-animate-direction', valueAttrPrev: 'prev', valueAttrNext: 'next', valuePrev : -1, valueNext : 1 }
 		,listSelector: '.jList' //usualy a class on a <ul>
 		,listElementSelector: '.jList li'
 		,arrowAlwaysVisible: false // pass to true if arrow always visible
+		,deltaBetweenElements: 0 // a delta between tabs. A space for example
+		,elementSelectedSelector: '.jIsSelected' // a selector if a element in the list is selected and could modify th start position
 	};
 
 }(jQuery));
