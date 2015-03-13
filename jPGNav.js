@@ -1,7 +1,11 @@
 (function($)
 {
 	'use strict';
-	
+	/**
+	* sliding nodes
+	* @param {object} options plugin options	
+	* @return {object} this
+	*/
 	$.fn.sliding = function(options)
 	{
 		// initiate some properties
@@ -34,10 +38,13 @@
 		);		
 	};
 	
-	// some function
-	var 
-	// calculate tabWidth array
-	calcTabsWith = function (self, options){
+	/**
+	* calculate tabWidth array
+	* @param {object} self plugin node instance
+	* @param {object} options plugin options	
+	* @return {void}
+	*/
+	var calcTabsWith = function (self, options){
 		var $tabs = $(self).find( options.listElementSelector ); //get all tabs
 			 
 		// for each tabs, calculate the end position of the tabs since position 0
@@ -51,7 +58,14 @@
 			}
 		});
 	},
-	// animate the tabs
+	
+	/**
+	* animate the tabs if need it
+	* @param {object} self plugin node instance
+	* @param {object} $arrow node of the arrow clicked
+	* @param {object} options plugin options	
+	* @return {void}
+	*/
 	tabNavigate = function(self, $arrow, options) {
 		var arrowOption = options.arrowDirection // options of the navigation arrow 
 			,direction = $arrow.attr(arrowOption.attr) === arrowOption.valueAttrNext ? arrowOption.valueNext : arrowOption.valuePrev; //get the direction of the arrow clicked
@@ -60,6 +74,14 @@
 		(self.tabPos + direction < self.tabWidth.length-1 && self.tabPos + direction >= 0)
 			&& animation($(self).find( options.listSelector ), self, options, direction);				
 	},
+	/**
+	* do the animation
+	* @param {object} $this node to animate
+	* @param {object} self plugin node instance
+	* @param {object} options plugin options
+	* @param {integer} direction +1 or -1
+	* @return {void}
+	*/
 	animation = function($this, self, options, direction) {
 		//direction = 0 => initiate position 
 		$this
@@ -82,7 +104,13 @@
 				!options.arrowAlwaysVisible && manageArrow(self, options);
 			});
 	},
-	// manage arrow, check if need to show or hide it
+	
+	/**
+	* manage arrow, check if need to show or hide it
+	* @param {object} plugin self node instance
+	* @param {object} options plugin options	
+	* @return {void}
+	*/
 	manageArrow = function (self, options) {
 		// be sure to show the arrow
 		if (options.arrowAlwaysVisible) {
@@ -105,11 +133,18 @@
 			}
 		}
 	},
-	// show or hide arrow
+	/**
+	* Show navigation button
+	* @param {object} plugin self node instance
+	* @param {object} options plugin options
+	* @param {string} attribute value of the button
+	* @param {boolean} show
+	* @return {void}
+	*/
 	showNavButton = function (self, options, button, show ) {
 		if (typeof show === 'undefined') show = true;
 
-		var $node = null; // node of the arrow
+		var $node = {}; // node of the arrow
 		if (show) {
 			$node = $(self).find(options.arrowSelector+'['+options.arrowDirection.attr+'="'+button+'"]:hidden');
 			if ($node.length > 0) {
